@@ -2,6 +2,7 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 var logger = require('morgan');
 const db = require('./model/config')
 
@@ -9,6 +10,11 @@ var indexRouter = require('./routes/index');
 
 
 var app = express();
+
+// 解析 application/json
+app.use(bodyParser.json()); 
+// 解析 application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

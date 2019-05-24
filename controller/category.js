@@ -82,7 +82,6 @@ async function getCommodityOfCategory (req,res,next) {
             code: 200,
             data
         })
-
     } catch (err) {
         next(err)
     }

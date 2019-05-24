@@ -7,6 +7,8 @@
     "dev": "node-dev ./bin/www"
   },
   "dependencies": {
+    "@alicloud/sms-sdk": "^1.1.6",
+    "body-parse": "^0.1.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "ejs": "~2.5.7",

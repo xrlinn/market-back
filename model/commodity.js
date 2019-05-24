@@ -8,10 +8,10 @@ const commodity = new mongoose.Schema({
        type: Number,
        default: 0
    },
-   comment: {
+   comment: [{
        type: mongoose.SchemaTypes.ObjectId,
        ref: 'comment'
-   },
+   }],
    like: {
        type: Number,
        default: 0
