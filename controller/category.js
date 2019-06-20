@@ -9,7 +9,6 @@ async function addCategory (req,res,next) {
         await categoryModel.create({
             title
         })
-
         res.json({
             code: 200,
             msg: '添加分类成功'
@@ -20,10 +19,37 @@ async function addCategory (req,res,next) {
     }
 }
 
+async function deleteCategory (req,res,next) {
+    try {
+        const {id} = req.params
+        const categoryData = await categoryModel.findById(id)
+        if (categoryData) {
+            await categoryData.remove()
+            await categoryData.save()
+            res.json({
+                code: 200,
+                msg: '该分类删除成功'
+            })
+        } else {
+            res.json({
+                code: 400,
+                msg: '该分类不存在或以删除'
+            })
+        }
+    } catch (err) {
+        next(err)
+    } 
+}
+
 async function getCategory (req,res,next) {
     try {
+        let {pn,size} = req.query
+        pn = Number(pn)
+        size = Number(size)
         const data = await categoryModel.find()
-            .sort({_id: -1})
+                    .skip((pn-1)*size)
+                    .limit(size)
+                    .sort({_id: -1})
         res.json({
             code: 200,
             data
@@ -89,11 +115,12 @@ async function getCommodityOfCategory (req,res,next) {
 
 async function getCommodityByCategory (req,res,next) {
     try {
-        const {id} = req.params
+        const {title} = req.body
+        console.log(title)
         let {pn, size} =  req.query
         pn = Number(pn)
         size = Number(size)
-        const data = await categoryModel.findById(mongoose.Types.ObjectId(id))
+        const data = await categoryModel.findOne({title})
                     .populate({
                         path: 'commodity',
                         options: {limit: size,skip:(pn-1)*size}
@@ -114,5 +141,6 @@ module.exports = {
     getCategory,
     addCommodityToCategory,
     getCommodityOfCategory,
-    getCommodityByCategory
+    getCommodityByCategory,
+    deleteCategory
 }

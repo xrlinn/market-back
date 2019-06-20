@@ -79,21 +79,27 @@ async function login (req,res,next) {
                 phone
             })
             if (user) {
-                if (password === user.password) {
-                    const token = signUtil({userId: user._id})
-                    res.json({
-                        code: 200,
-                        data: {
-                            token
-                        }
-                    })
+                if (user.isCanLogin) {
+                    if (password === user.password) {
+                        const token = signUtil({userId: user._id})
+                        res.json({
+                            code: 200,
+                            data: {
+                                token
+                            }
+                        })
+                    } else {
+                        res.json({
+                            code: 400,
+                            msg: '输入的密码不正确'
+                        })
+                    }
                 } else {
                     res.json({
-                        code: 400,
-                        msg: '输入的密码不正确'
+                        code: 402,
+                        msg: '该用户涉嫌违规已被封禁'
                     })
                 }
-
             } else {
                 res.json({
                     code: 400,
@@ -202,10 +208,68 @@ async function changeUser (req,res,next) {
     }
 }
 
+async function getAllUser(req,res,next) {
+    try {
+        const userData = await userModel.find()
+        res.json({
+            code: 200,
+            data: userData
+        })
+    } catch (err) {
+        next(err)
+    }
+}
+
+async function limitUser(req,res,next) {
+    try {
+        const {id} = req.params
+        const userData = await userModel.findById(id)
+        if (userData) {
+            await userData.set({isCanLogin:false})
+            await userData.save()
+            res.json({
+                code: 200,
+                msg: '该用户封禁成功'
+            })
+        } else {
+            res.json({
+                code: 400,
+                msg : '该用户不存在'
+            })
+        }
+    } catch (err) {
+        next(err)
+    }
+}
+async function liftUser(req,res,next) {
+    try {
+        const {id} = req.params
+        const userData = await userModel.findById(id)
+        if (userData) {
+            await userData.set({isCanLogin:true})
+            await userData.save()
+            res.json({
+                code: 200,
+                msg: '该用户解禁成功'
+            })
+        } else {
+            res.json({
+                code: 400,
+                msg : '该用户不存在'
+            })
+        }
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports = {
     register,
     login,
     getUserById,
     changePassword,
-    changeUser
+    changeUser,
+    getAllUser,
+    limitUser,
+    liftUser
 }

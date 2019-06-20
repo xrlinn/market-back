@@ -1,6 +1,7 @@
 const likeModel = require('../model/like')
 const mongoose = require('mongoose')
 const userModel = require('../model/user')
+const commodityModel = require('../model/commodity')
 
 async function addLike (req,res,next) {
     try {
@@ -21,6 +22,10 @@ async function addLike (req,res,next) {
                 commodity: mongoose.Types.ObjectId(commodityId)
             })
             await userModel.update({_id:mongoose.Types.ObjectId(userId)},
+            {
+                $inc: {like: 1}
+            })
+            await commodityModel.update({_id:mongoose.Types.ObjectId(commodityId)},
             {
                 $inc: {like: 1}
             })

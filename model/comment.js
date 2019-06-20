@@ -6,7 +6,7 @@ const comment = new mongoose.Schema({
         ref: 'user'
     },
     text: String,
-    img: String,
+    img: Array,
 },{versionKey: false, timestamps:{createdAt:'createTime',
 updatedAt: 'updateTime'}})
 

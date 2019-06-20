@@ -1,4 +1,6 @@
 const commodityModel = require('../model/commodity')
+const categoryModel = require('../model/category')
+const swiperModel = require('../model/swiper')
 const traceModel = require('../model/trace')
 const userModel = require('../model/user')
 const mongoose = require('mongoose')
@@ -35,10 +37,47 @@ async function addCommodity(req, res, next) {
         next ()
     }
 }
+async function addCommodityToCategory(req, res, next) {
+    try {
+        const {img,title,price,delivery,categoryTitle} = req.body
+        const categoryData = await categoryModel.findOne({
+            title: categoryTitle
+        })
+        if (img&&title&&price&&delivery&&categoryTitle) {
+            const commodity = await commodityModel.create({
+                img,
+                title,
+                price,
+                delivery
+            })
+            await categoryData.commodity.push(commodity._id)
+            await categoryData.save()
+            res.json({
+                code: 200,
+                msg: '商品发布成功'
+            })
+        } else {
+            res.json({
+                code: 400,
+                msg: '请填入完整的商品信息！'
+            })
+        }
+
+    } catch (err) {
+        next ()
+    }
+}
+
+
 
 async function getAllCommodity (req,res,next) {
     try {
+        let {pn, size} = req.query
+        pn = Number(pn)
+        size = Number(size)
         const data = await commodityModel.find()
+                    .skip((pn-1)*size)
+                    .limit(size)
         res.json({
             code: 200,
             data
@@ -55,6 +94,10 @@ async function getCommodityById (req,res,next) {
         const {id} = req.params
         console.log(id)
         const data = await commodityModel.findById(id)
+                    .populate({
+                        path: 'comment',
+                        options: {populate: 'user'}
+                    })
         if (token) {
             const userData = await verifyToken(token);
             if (userData) {
@@ -94,8 +137,44 @@ async function getCommodityById (req,res,next) {
     }
 }
 
+async function deleteCommodity (req, res, next) {
+    try{
+        const {id} = req.params
+        const commodityData = await commodityModel.findById(id)
+        const categoryData = await categoryModel.findOne({
+            commodity:mongoose.Types.ObjectId(id)
+        })
+        const swiperData = await swiperModel.findOne({
+            commodity:mongoose.Types.ObjectId(id)
+        })
+        await categoryData.commodity.splice(categoryData.commodity.findIndex(item => 
+            item === id
+        ), 1)
+        await categoryData.save()
+        await swiperData.remove()
+        await swiperData.save()
+        if (commodityData) {
+            await commodityData.remove()
+            await commodityData.save()
+            res.json({
+                code: 200,
+                msg: '该商品下架成功'
+            })
+        }else {
+            res.json({
+                code: 400,
+                msg: '该商品不存在或已删除'
+            })
+        }
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports = {
     addCommodity,
     getAllCommodity,
-    getCommodityById
+    getCommodityById,
+    deleteCommodity,
+    addCommodityToCategory
 }

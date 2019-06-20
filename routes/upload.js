@@ -5,5 +5,6 @@ const {upload} = require('../controller/upload')
 
 
 router.get('/', auth, upload)
+router.get('/admin', upload)
 
 module.exports = router

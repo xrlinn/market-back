@@ -1,6 +1,7 @@
 const collectionModel = require('../model/collection');
 const mongoose = require('mongoose');
 const userModel = require('../model/user')
+const commodityModel = require('../model/commodity')
 
 async function addCollection (req,res,next) {
     try {
@@ -23,6 +24,10 @@ async function addCollection (req,res,next) {
             await userModel.update({_id:mongoose.Types.ObjectId(userId)},
             {
                 $inc: {collected: 1}
+            })
+            await commodityModel.update({_id:mongoose.Types.ObjectId(commodityId)},
+            {
+                $inc: {collections: 1}
             })
             res.json({
                 code: 200,

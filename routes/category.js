@@ -4,12 +4,14 @@ const {addCategory,
         getCategory,
         addCommodityToCategory,
         getCommodityOfCategory,
-        getCommodityByCategory} = require('../controller/category')
+        getCommodityByCategory,
+        deleteCategory} = require('../controller/category')
 
 router.post('/',addCategory)
 router.get('/',getCategory)
+router.delete('/:id',deleteCategory)
 router.post('/commodity', addCommodityToCategory)
 router.get('/commodity', getCommodityOfCategory)
-router.get('/:id/commoditys', getCommodityByCategory)
+router.post('/commodities', getCommodityByCategory)
 
 module.exports = router

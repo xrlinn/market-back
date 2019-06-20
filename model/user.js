@@ -28,6 +28,10 @@ const user = new mongoose.Schema({
     cartnums: {
         type: Number,
         default: 0
+    },
+    isCanLogin:{
+        type: Boolean,
+        default: true
     }
 },{versionKey:false, timestamps: {createdAt: 'createTime',
  updatedAt: 'updateTime'}})

@@ -10,7 +10,9 @@ const traceRouters = require('./trace')
 const collectionRouters = require('./collection')
 const likeRouters = require('./like')
 const cartRouters = require('./cart')
-const orderRouters = require('./order') 
+const orderRouters = require('./order')
+const commentRouters = require('./comment')
+const searchRouters = require('./search')
 
 router.use('/commodity', commodityRouters)
 router.use('/category', categoryRouters)
@@ -23,5 +25,7 @@ router.use('/collect', collectionRouters)
 router.use('/like', likeRouters)
 router.use('/cart', cartRouters)
 router.use('/order', orderRouters)
+router.use('/comment', commentRouters)
+router.use('/search', searchRouters)
 
 module.exports = router;
